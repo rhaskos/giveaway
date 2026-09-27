@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Giriş Yap</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1ece2;
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 24px;
+    }
+    .giris-kart {
+      width: 100%;
+      max-width: 480px;
+    }
+    .giris-baslik { 
+      text-align: right;
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #2b2723;
+      margin: 0 0 28px;
+    }
+    .giris-satir {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .giris-etiket {
+      font-family: Georgia, 'Times New Roman', serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 13px;
+      color: #5d4a63;
+      text-align: left;
+    }
+    .giris-satir input[type="email"],
+    .giris-satir input[type="password"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cfc8b8;
+      background: #fff;
+      border-radius: 2px;
+      font-size: 14px;
+      color: #333;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .giris-satir input:focus {
+      outline: none;
+      border-color: #b7ad95;
+    }
+    .giris-buton-satir {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 16px;
+    }
+    .giris-buton {
+      grid-column: 2;
+      padding: 14px;
+      background: #e2572b;
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .giris-buton:hover { background: #cf4c22; }
+    .giris-buton:disabled { opacity: 0.6; cursor: default; }
+    .hata {
+      grid-column: 2;
+      background: #fbe4e0;
+      border: 1px solid #e2572b;
+      color: #a83a1c;
+      padding: 8px 12px;
+      border-radius: 2px;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .gizli { display: none !important; }
+
+    @media (max-width: 480px) {
+      .giris-baslik { text-align: center; }
+      .giris-satir, .giris-buton-satir { grid-template-columns: 1fr; }
+      .giris-etiket { text-align: left; }
+      .giris-buton { grid-column: 1; }
+      .hata { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="giris-kart">
+    <h1 class="giris-baslik">GİRİŞ YAP</h1>
+
+    <form id="girisForm">
+      <div id="hataKutusuSatir" class="giris-buton-satir gizli">
+        <div class="hata" id="hataKutusu"></div>
+      </div>
+
+      <div class="giris-satir">
+        <label class="giris-etiket" for="email">Emaıl Address</label>
+        <input type="email" id="email" name="email" placeholder="Email Address" required autocomplete="email">
+      </div>
+
+      <div class="giris-satir">
+        <label class="giris-etiket" for="sifre">Password</label>
+        <input type="password" id="sifre" name="sifre" placeholder="Password" required autocomplete="new-password">
+      </div>
+
+      <div class="giris-buton-satir">
+        <button type="submit" class="giris-buton" id="gonderButon">Giriş Yap</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('girisForm');
+    const hataKutusuSatir = document.getElementById('hataKutusuSatir');
+    const hataKutusu = document.getElementById('hataKutusu');
+    const gonderButon = document.getElementById('gonderButon');
+
+    function hataGoster(mesaj) {
+      hataKutusu.textContent = mesaj;
+      hataKutusuSatir.classList.remove('gizli');
+    }
+
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hataKutusuSatir.classList.add('gizli');
+
+      const email = document.getElementById('email').value.trim();
+      const sifre = document.getElementById('sifre').value;
+
+      if (!EMAIL_REGEX.test(email)) {
+        hataGoster('Lütfen geçerli bir e-posta adresi girin (örn. isim@gmail.com).');
+        return;
+      }
+      if (sifre.length < 8 || sifre.length > 72) {
+        hataGoster('Şifre 8-72 karakter arasında olmalıdır.');
+        return;
+      }
+
+      gonderButon.disabled = true;
+      gonderButon.textContent = 'Gönderiliyor...';
+
+      try {
+        const yanit = await fetch('/api/giris', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, sifre }),
+        });
+        const sonuc = await yanit.json();
+
+        if (!yanit.ok) {
+          hataGoster(sonuc.hata || 'Bir hata oluştu, tekrar deneyin.');
+          gonderButon.disabled = false;
+          gonderButon.textContent = 'Kayıt Ol ve Kazan';
+          return;
+        }
+
+        window.location.href = 'dogrulama.html';
+      } catch (err) {
+        hataGoster('Sunucuya bağlanılamadı. Lütfen tekrar deneyin.');
+        gonderButon.disabled = false;
+        gonderButon.textContent = 'Kayıt Ol ve Kazan';
+      }
+    });
+  </script>
+</body>
+</html>

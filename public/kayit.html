@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kayıt Ol</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="kart">
+    <div class="logo">Ödül Kampanyası</div>
+    <h1>Hesap Oluştur</h1>
+    <p class="aciklama">Ödülünü alabilmek için bilgilerini gir. Kayıt sonrası e-postana bir doğrulama kodu göndereceğiz.</p>
+
+    <div id="hataKutusu" class="hata gizli"></div>
+
+    <form id="kayitForm">
+      <div>
+        <label for="email">E-posta</label>
+        <input type="email" id="email" name="email" placeholder="ornek@eposta.com" required autocomplete="email">
+      </div>
+      <div>
+        <label for="sifre">Şifre</label>
+        <input type="password" id="sifre" name="sifre" placeholder="En az 8 karakter" minlength="8" required autocomplete="new-password">
+      </div>
+      <div>
+        <label for="sifreTekrar">Şifre (Tekrar)</label>
+        <input type="password" id="sifreTekrar" name="sifreTekrar" placeholder="Şifreni tekrar gir" minlength="8" required autocomplete="new-password">
+      </div>
+      <button type="submit" class="buyuk-buton" id="gonderButon">Kayıt Ol</button>
+    </form>
+
+    <div class="alt-link">Zaten hesabın var mı? <a href="giris.html">Giriş yap</a></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('kayitForm');
+    const hataKutusu = document.getElementById('hataKutusu');
+    const gonderButon = document.getElementById('gonderButon');
+
+    function hataGoster(mesaj) {
+      hataKutusu.textContent = mesaj;
+      hataKutusu.classList.remove('gizli');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hataKutusu.classList.add('gizli');
+      gonderButon.disabled = true;
+      gonderButon.textContent = 'Gönderiliyor...';
+
+      const veri = {
+        email: document.getElementById('email').value.trim(),
+        sifre: document.getElementById('sifre').value,
+        sifreTekrar: document.getElementById('sifreTekrar').value,
+      };
+
+      try {
+        const yanit = await fetch('/api/kayit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(veri),
+        });
+        const sonuc = await yanit.json();
+
+        if (!yanit.ok) {
+          hataGoster(sonuc.hata || 'Bir hata oluştu, tekrar deneyin.');
+          gonderButon.disabled = false;
+          gonderButon.textContent = 'Kayıt Ol';
+          return;
+        }
+
+        if (sonuc.testKodu) {
+          console.log('[TEST MODU] Doğrulama kodunuz:', sonuc.testKodu);
+        }
+
+        window.location.href = 'dogrulama.html';
+      } catch (err) {
+        hataGoster('Sunucuya bağlanılamadı. Lütfen tekrar deneyin.');
+        gonderButon.disabled = false;
+        gonderButon.textContent = 'Kayıt Ol';
+      }
+    });
+  </script>
+</body>
+</html>

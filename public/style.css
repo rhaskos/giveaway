@@ -1,0 +1,94 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: #0f1115;
+  color: #eef0f3;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.kart {
+  width: 100%;
+  max-width: 420px;
+  background: #1a1d24;
+  border: 1px solid #2a2d34;
+  border-radius: 18px;
+  padding: 32px;
+  text-align: center;
+}
+.logo {
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: #9aa4b2;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.odul-gorsel {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  object-fit: cover;
+  background: #12141a;
+  display: block;
+  margin-bottom: 20px;
+}
+.odul-gorsel-bos {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  background: #12141a;
+  border: 2px dashed #333844;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 13px;
+  margin-bottom: 20px;
+  text-align: center;
+  padding: 16px;
+}
+h1 { font-size: 22px; margin: 0 0 8px; }
+p.aciklama { color: #9aa4b2; font-size: 14px; line-height: 1.5; margin: 0 0 24px; }
+form { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+label { font-size: 13px; color: #9aa4b2; margin-bottom: -6px; }
+input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #2a2d34;
+  background: #12141a;
+  color: #eef0f3;
+  font-size: 15px;
+}
+input:focus { outline: none; border-color: #5b8def; }
+button.buyuk-buton {
+  margin-top: 8px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: #5b8def;
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+}
+button.buyuk-buton:disabled { opacity: 0.6; cursor: default; }
+button.buyuk-buton:not(:disabled):hover { background: #4a7cdc; }
+.alt-link { margin-top: 18px; font-size: 13px; color: #9aa4b2; }
+.alt-link a { color: #5b8def; text-decoration: none; }
+.hata { background: #3a1d22; border: 1px solid #6a2530; color: #ff9aa6; padding: 10px 12px; border-radius: 8px; font-size: 13px; }
+.bilgi { background: #1d2b3a; border: 1px solid #25415e; color: #8fc3ff; padding: 10px 12px; border-radius: 8px; font-size: 13px; }
+.gizli { display: none !important; }
+.kod-girisi { display: flex; gap: 8px; justify-content: center; }
+.kod-girisi input {
+  width: 44px;
+  height: 54px;
+  text-align: center;
+  font-size: 22px;
+  padding: 0;
+}
+.basari-ikon { font-size: 48px; margin-bottom: 12px; }

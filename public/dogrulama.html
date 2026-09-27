@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PIN Gir</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1ece2;
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 24px;
+    }
+    .dogrulama-kart {
+      width: 100%;
+      max-width: 560px;
+    }
+    .dogrulama-baslik {
+      text-align: right;
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #2b2723;
+      margin: 0 0 18px;
+    }
+    .dogrulama-aciklama {
+      font-size: 14px;
+      color: #2c5aa0;
+      margin: 0 0 26px;
+    }
+    .dogrulama-satir {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .dogrulama-satir input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cfc8b8;
+      background: #fff;
+      border-radius: 2px;
+      font-size: 16px;
+      letter-spacing: 3px;
+      color: #333;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .dogrulama-satir input:focus {
+      outline: none;
+      border-color: #b7ad95;
+    }
+    .dogrulama-buton-satir {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 16px;
+    }
+    .dogrulama-buton {
+      grid-column: 2;
+      padding: 14px;
+      background: #e2572b;
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .dogrulama-buton:hover { background: #cf4c22; }
+    .dogrulama-buton:disabled { opacity: 0.6; cursor: default; }
+    .hata, .bilgi {
+      grid-column: 2;
+      padding: 8px 12px;
+      border-radius: 2px;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .hata {
+      background: #fbe4e0;
+      border: 1px solid #e2572b;
+      color: #a83a1c;
+    }
+    .bilgi {
+      background: #e4eefb;
+      border: 1px solid #2c5aa0;
+      color: #1f3f70;
+    }
+    .yeniden-gonder {
+      grid-column: 2;
+      margin-top: 16px;
+    }
+    .yeniden-gonder a {
+      color: #e2572b;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .yeniden-gonder a:hover { text-decoration: underline; }
+    .gizli { display: none !important; }
+
+    @media (max-width: 480px) {
+      .dogrulama-baslik { text-align: center; }
+      .dogrulama-satir, .dogrulama-buton-satir { grid-template-columns: 1fr; }
+      .dogrulama-buton { grid-column: 1; }
+      .yeniden-gonder, .hata, .bilgi { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dogrulama-kart">
+    <h1 class="dogrulama-baslik">KODUNUZU GİRİNİZ</h1>
+    <p class="dogrulama-aciklama">Lütfen E-posta adresinize gönderilen doğrulama kodunu aşağıdaki alana giriniz.</p>
+
+    <form id="dogrulaForm">
+      <div class="dogrulama-buton-satir">
+        <div class="bilgi gizli" id="bilgiKutusu"></div>
+        <div class="hata gizli" id="hataKutusu"></div>
+      </div>
+
+      <div class="dogrulama-satir">
+        <div></div>
+        <input type="text" id="kodGirisi" inputmode="numeric" maxlength="8" placeholder="KOD" autocomplete="one-time-code" required>
+      </div>
+
+      <div class="dogrulama-buton-satir">
+        <button type="submit" class="dogrulama-buton" id="gonderButon">Devam Et</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('dogrulaForm');
+    const kodGirisi = document.getElementById('kodGirisi');
+    const hataKutusu = document.getElementById('hataKutusu');
+    const bilgiKutusu = document.getElementById('bilgiKutusu');
+    const gonderButon = document.getElementById('gonderButon');
+    const yenidenGonderLink = document.getElementById('yenidenGonderLink');
+
+    kodGirisi.addEventListener('input', () => {
+      kodGirisi.value = kodGirisi.value.replace(/[^0-9]/g, '');
+    });
+
+    function hataGoster(mesaj) {
+      hataKutusu.textContent = mesaj;
+      hataKutusu.classList.remove('gizli');
+      bilgiKutusu.classList.add('gizli');
+    }
+
+    function bilgiGoster(mesaj) {
+      bilgiKutusu.textContent = mesaj;
+      bilgiKutusu.classList.remove('gizli');
+      hataKutusu.classList.add('gizli');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hataKutusu.classList.add('gizli');
+
+      const kod = kodGirisi.value.trim();
+      if (!/^[0-9]+$/.test(kod)) {
+        hataGoster('Lütfen sadece rakam girin.');
+        return;
+      }
+
+      gonderButon.disabled = true;
+      gonderButon.textContent = 'Doğrulanıyor...';
+
+      try {
+        const yanit = await fetch('/api/dogrula', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kod }),
+        });
+        const sonuc = await yanit.json();
+
+        if (!yanit.ok) {
+          hataGoster(sonuc.hata || 'Bir hata oluştu, tekrar deneyin.');
+          gonderButon.disabled = false;
+          gonderButon.textContent = 'Kodu Doğrula';
+          return;
+        }
+
+        window.location.href = 'basari.html';
+      } catch (err) {
+        hataGoster('Sunucuya bağlanılamadı. Lütfen tekrar deneyin.');
+        gonderButon.disabled = false;
+        gonderButon.textContent = 'Kodu Doğrula';
+      }
+    });
+
+    yenidenGonderLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        const yanit = await fetch('/api/kod-yeniden-gonder', { method: 'POST' });
+        const sonuc = await yanit.json();
+
+        if (!yanit.ok) {
+          hataGoster(sonuc.hata || 'Kod gönderilemedi, tekrar deneyin.');
+          return;
+        }
+
+        if (sonuc.testKodu) {
+          console.log('[TEST MODU] Doğrulama kodunuz:', sonuc.testKodu);
+        }
+
+        bilgiGoster('Yeni kod gönderildi.');
+      } catch (err) {
+        hataGoster('Sunucuya bağlanılamadı. Lütfen tekrar deneyin.');
+      }
+    });
+
+    kodGirisi.focus();
+  </script>
+</body>
+</html>

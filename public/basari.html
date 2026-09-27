@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tebrikler!</title>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #1a1410 url('gorseller/basari-arkaplan.jpg') center/cover no-repeat;
+    }
+    /* gorseller/basari-arkaplan.jpg eklenmezse koyu bir degrade zemin gosterilir */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(30,20,15,0.55) 0%, rgba(10,8,6,0.85) 100%);
+      z-index: 0;
+    }
+    .basari-kart {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 620px;
+      text-align: center;
+      padding: 40px 32px;
+      background: rgba(10, 8, 6, 0.35);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 12px;
+    }
+    .basari-baslik {
+      font-family: 'MedievalSharp', 'Georgia', serif;
+      font-size: 52px;
+      margin: 0 0 20px;
+      color: #f4d35e;
+      letter-spacing: 2px;
+      text-shadow:
+        0 0 8px rgba(244, 211, 94, 0.9),
+        0 0 18px rgba(244, 211, 94, 0.6),
+        0 2px 2px rgba(0,0,0,0.8);
+    }
+    .basari-mesaj {
+      font-size: 18px;
+      color: #f2f2f2;
+      line-height: 1.6;
+      margin: 0 0 22px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+    }
+    .basari-not {
+      font-size: 15px;
+      font-weight: 700;
+      color: #f4d35e;
+      margin: 0 0 30px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+    }
+    .basari-buton {
+      display: inline-block;
+      padding: 14px 36px;
+      background: #5a1414;
+      border: 2px solid #d4af37;
+      border-radius: 6px;
+      color: #f4d35e;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .basari-buton:hover { background: #711a1a; }
+
+    @media (max-width: 480px) {
+      .basari-baslik { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="basari-kart">
+    <h1 class="basari-baslik">TEBRİKLER!</h1>
+    <p class="basari-mesaj" id="mesaj">
+      <!-- Kendi odulunuzun adina gore bu metni degistirin -->
+      Ödülünü başarıyla talep ettin!
+    </p>
+    <p class="basari-not">Ödülünü almak için oyunu yeniden başlat.</p>
+    <button class="basari-buton" id="cikisButon">Ana Sayfaya Dön</button>
+  </div>
+
+  <script>
+    // NOT: Giris/kod dogrulamasi artik kendi kodunuzla yapilacagi icin bu
+    // sayfa oturum kontrolu yapmiyor, dogrudan gosteriliyor.
+
+    document.getElementById('cikisButon').addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>
